@@ -9,7 +9,7 @@ from IPython import get_ipython
 import matplotlib.pyplot as plt
 import pandas as pd
 # Local packages
-from hermanCode.hermanCode import getTimestamp, make_dir_path
+from drapi.drapi import getTimestamp, make_dir_path
 
 # Arguments
 LOG_LEVEL = "INFO"
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     # Remove outliers (first try)
     NUM_OUTLIERS = 11
     x_new = x.sort_values()[:len(x) - 1 - NUM_OUTLIERS]
-    
+
     # NOTE When we remove the top 11 values we still notice that there are some unusual variable values, namely sequential or repeating values. The values are more unusual as we go from the top 100 to the top 20 values. We can make notes of these cases and revisit them in the future. Perhaps there is a reason why the input price value is as exceptional as it is. In the meantime we will only drop the values which made the visualization unsuable, i.e., the top 11 values.
 
     priceOutliers = x.sort_values()[-NUM_OUTLIERS:]
