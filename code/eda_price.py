@@ -123,13 +123,13 @@ if __name__ == "__main__":
     logging.info("Finished reading data")
 
     summaryStats, (n, bins), figresults, fignums = eda("price", data0)
-    logging.info(f"Summary statistics for {'price'}:\n{summaryStats.__str__()}")
+    logging.info(f"Summary statistics for {'price'}, unmodified:\n{summaryStats.__str__()}")
 
     # NOTE Insert observation note from previous commits TODO
     # Drop top 11 TODO
     data = data0.sort_values(by="price", ascending=False)[11:]
     summaryStats, (n, bins), figresults, fignums = eda("price", data)
-    logging.info(f"Summary statistics for {'price'}:\n{summaryStats.__str__()}")
+    logging.info(f"Summary statistics for {'price'}, dropping 11 highest values:\n{summaryStats.__str__()}")
 
     # NOTE Insert observation note from previous commits TODO
     # NOTE Observe the inflection point is somewhere between the 99th percentile and the max. So we scan from the top of the decreasing values using a line search beginning with the top 1% of values. The data has 426,880 rows, so the top 1% of values are the top 4,269 when sorted in descending order. For simplicity we index between the 4,000th and 4,050th rows.
@@ -147,14 +147,15 @@ if __name__ == "__main__":
 
     data1 = data0.sort_values(by="price", ascending=False)[50:]
     summaryStats, (n, bins), figresults, fignums = eda("price", data1)
-    logging.info(f"Summary statistics for {'price'}:\n{summaryStats.__str__()}")
+    logging.info(f"Summary statistics for {'price'}, dropping 100 highest values:\n{summaryStats.__str__()}")
 
     # NOTE However, are data is still very skewed. Depending on the analysis we do, we may or may not need normality. Here's a preview to what `"price"` looks like with a log transform. This also reminds us that we have many 0-valued cases. 34,846, in fact.
 
     # Log transform
     data2 = data0.copy()
     data2["price"] = data2["price"].apply(lambda el: 0 if el == 0 else np.log(el))
-    summaryStats, (n, bins), figresults, fignums = eda("price", data)
+    summaryStats, (n, bins), figresults, fignums = eda("price", data2)
+    logging.info(f"Summary statistics for {'price'}, log-transform:\n{summaryStats.__str__()}")
 
     # Log transform without 0-valued cases.
     data3 = data0.copy()
@@ -162,6 +163,7 @@ if __name__ == "__main__":
     data3 = data3.drop(mask[mask].index)
     data3["price"] = data3["price"].apply(lambda el: 0 if el == 0 else np.log(el))
     summaryStats, (n, bins), figresults, fignums = eda("price", data3)
+    logging.info(f"Summary statistics for {'price'}, log-transform without 0s:\n{summaryStats.__str__()}")
 
     # Compare normality of original, abridged, transformed, and non-zer0-valued transformed versions of `"price"`. The test checks if the distribution is different from the normal distribution. So a positive result (p<0.05) implies non-normality.
     normalityResult1 = st.normaltest(data0["price"])
@@ -177,6 +179,10 @@ if __name__ == "__main__":
     # Out[4]: NormaltestResult(statistic=200245.54625463966, pvalue=0.0)
     # In [5]: normalityResult4
     # Out[5]: NormaltestResult(statistic=256776.586390601, pvalue=0.0)
+    logging.info(f"""{normalityResult1}.""")
+    logging.info(f"""{normalityResult2}.""")
+    logging.info(f"""{normalityResult3}.""")
+    logging.info(f"""{normalityResult4}.""")
 
     # NOTE Although all four transformations are significantly difference, the third option has the smallest statistic (200245).
 
